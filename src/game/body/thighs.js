@@ -21,14 +21,15 @@ function thighGeo(sx){
     const yM=Math.max(y,0.1), zF=S(tForX(sx*cx,yM,1,0),yM,0,tmp).z, zB=S(tForX(sx*cx,yM,-1,0),yM,0,tmp).z, d=Math.max(0,0.1-y);
     const zc=0.5*(zF+zB), rzF=(zF-zc)+0.004-0.07*d-0.1*d*d, rzB=(zc-zB)+0.004-0.12*d-0.2*d*d, pts=[];
     // thigh = the torso's own hip cross-section (clipped at the inner edge), shrunk toward the thigh centre going down -> no ledge
-    const sec=torsoSec(Math.max(y,Y_BOT+0.001),xi), q2=ss(0.16,yCut,y), f=1-0.2*Math.pow(q2,0.9), of=0.0008-0.0128*ss(0.24,0.315,y);
+    const sec=torsoSec(Math.max(y,Y_BOT+0.001),xi), q2=ss(0.16,yCut,y), f=1-0.2*Math.pow(q2,0.9), of=0.0008-0.007*ss(0.2,0.44,y);   // thigh emerges very gradually -> no visible junction line
     const ccx=xi+(Math.abs(S(0,Math.max(y,Y_BOT+0.001),0,tmp).x)-xi)*0.5, ccz=zc;
     for(let a=0;a<=NA;a++){const ph=a/NA*Math.PI*2,c=Math.cos(ph),s=Math.sin(ph);
       const h=rayHit(sec,ccx,ccz,c,s)||[ccx+c*0.3,ccz+s*0.3];let xx=(h[0]-ccx+of*c)*f, zz=(h[1]-ccz+of*s)*f;
       const X=xi+(h[0]+of*c-xi)*f;
       // lower down: a rounder thigh (superellipse: flatter outer, fuller inner-thigh volume)
-      const w=ss(-0.3,0.06,y), n=c>0?2.05:1.95, Sx=cx+Math.sign(c)*Math.pow(Math.abs(c),2/n)*r, Sz=zc+Math.sign(s)*Math.pow(Math.abs(s),2/n)*(s>0?rzF:rzB);
-      pts.push([Sx+(X-Sx)*w,Sz+(ccz+zz-Sz)*w]);}
+      const w=ss(-0.3,0.06,y), n=c>0?2.05:2.25, Sx=cx+Math.sign(c)*Math.pow(Math.abs(c),2/n)*r, Sz=zc+Math.sign(s)*Math.pow(Math.abs(s),2/n)*(s>0?rzF*(1+0.06*Math.max(0,s)*Math.max(0,c*0.5+0.5)):rzB);   // front quad softness, slightly outer
+      const gf=s<0?0.012*ex((y-0.11)/0.03)*(0.5-0.5*c)*(-s):0;   // gluteal fold: inner-back crease fading outward
+      pts.push([Sx+(X-Sx)*w,Sz+(ccz+zz-Sz)*w+gf]);}
     for(let it=0;it<4;it++){const o=pts.map(p=>p.slice());for(let a=0;a<NA;a++){const p0=o[(a-1+NA)%NA],p1=o[(a+1)%NA];pts[a][0]=0.5*o[a][0]+0.25*(p0[0]+p1[0]);pts[a][1]=0.5*o[a][1]+0.25*(p0[1]+p1[1]);}pts[NA]=pts[0].slice();}
     const cX=pts.reduce((a,p)=>a+p[0],0)/pts.length,cZ=pts.reduce((a,p)=>a+p[1],0)/pts.length;
     return pts.map(([x,z],a)=>[sx*(cX+(x-cX)*shrink),cZ+(z-cZ)*shrink,a/NA*Math.PI*2]);

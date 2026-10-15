@@ -30,9 +30,9 @@ const SKIN_TEX=(()=>{
     const lg2=g.createLinearGradient(0,uvY(0.84),0,uvY(0.5));lg2.addColorStop(0,'rgba(100,45,28,0.09)');lg2.addColorStop(1,'rgba(100,45,28,0)');g.fillStyle=lg2;g.fillRect(0,uvY(0.84),7,uvY(0.5)-uvY(0.84));}
    for(const x of [0.16]){shade(x,1.05,60,90,'rgba(105,50,30,0.07)');shade(x,1.05,26,70,'rgba(232,175,135,0.08)');}
    // navel: inner shadow, warm rim, tiny top-lip highlight
-   shade(0,0.862,30,13,'rgba(110,50,30,0.35)');
-   shade(0,0.858,14,7,'rgba(55,20,12,0.75)');
-   shade(0,0.885,22,5,'rgba(240,185,145,0.22)');
+   shade(0,0.722,30,13,'rgba(110,50,30,0.35)');
+   shade(0,0.718,14,7,'rgba(55,20,12,0.75)');
+   shade(0,0.745,22,5,'rgba(240,185,145,0.22)');
    // hip bones / iliac crest: highlight on the crest, shadow just inside & below
    for(const x of [0.40]){shade(x,0.47,60,20,'rgba(238,180,140,0.16)');shade(x-0.06,0.38,55,32,'rgba(95,42,25,0.14)');shade(x+0.02,0.6,40,40,'rgba(95,42,25,0.06)');}
   }
@@ -47,8 +47,8 @@ const SKIN_TEX=(()=>{
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x,dx=hgt[i+1<W*H?i+1:i]-hgt[i>0?i-1:i],dy=hgt[i+W<W*H?i+W:i]-hgt[i>=W?i-W:i],s=2.2;
     const ed=Math.min(1,Math.min(x,W-1-x)/10);let nx=-dx*s*ed,ny=-dy*s*ed,l=Math.hypot(nx,ny,1); /* flat at mirror edges: no seam */ img.data[i*4]=(nx/l*0.5+0.5)*255;img.data[i*4+1]=(ny/l*0.5+0.5)*255;img.data[i*4+2]=(1/l*0.5+0.5)*255;img.data[i*4+3]=255;}
   ng.putImageData(img,0,0);const nmap=new THREE.CanvasTexture(n);
-  const r=document.createElement('canvas');r.width=512;r.height=256;const rg=r.getContext('2d');rg.fillStyle='rgb(168,168,168)';rg.fillRect(0,0,512,256);
-  const shine=(t,y,rx,ry)=>{const x=uvU(t)*512,yy=uvY(y)/4;const gr=rg.createRadialGradient(x,yy,0,x,yy,rx);gr.addColorStop(0,'rgba(120,120,120,0.8)');gr.addColorStop(1,'rgba(168,168,168,0)');rg.fillStyle=gr;rg.save();rg.translate(x,yy);rg.scale(1,ry/rx);rg.translate(-x,-yy);rg.fillRect(x-rx,yy-rx,2*rx,2*rx);rg.restore();};
+  const r=document.createElement('canvas');r.width=512;r.height=256;const rg=r.getContext('2d');rg.fillStyle='rgb(192,192,192)';rg.fillRect(0,0,512,256);
+  const shine=(t,y,rx,ry)=>{const x=uvU(t)*512,yy=uvY(y)/4;const gr=rg.createRadialGradient(x,yy,0,x,yy,rx);gr.addColorStop(0,'rgba(160,160,160,0.7)');gr.addColorStop(1,'rgba(192,192,192,0)');rg.fillStyle=gr;rg.save();rg.translate(x,yy);rg.scale(1,ry/rx);rg.translate(-x,-yy);rg.fillRect(x-rx,yy-rx,2*rx,2*rx);rg.restore();};
   shine(0.1,1.9,30,25);shine(Math.PI-0.1,1.9,30,25);shine(Math.PI/2,2.02,90,12);
   const rough=new THREE.CanvasTexture(r);
   return {map,nmap,rough};
@@ -57,12 +57,13 @@ function applySkin(geo,mat,tv){
   const uv=new Float32Array(tv.length*2);for(let i=0;i<tv.length;i++){uv[i*2]=uvU(tv[i][0]);uv[i*2+1]=(tv[i][1]+0.06)/1.12;}
   geo.setAttribute('uv',new THREE.BufferAttribute(uv,2));
   Object.assign(mat,{map:SKIN_TEX.map,normalMap:SKIN_TEX.nmap,roughnessMap:SKIN_TEX.rough,roughness:1.0});
-  mat.normalScale=new THREE.Vector2(0.075,0.075);
+  mat.normalScale=new THREE.Vector2(0.1,0.1);
   // fake subsurface: warm wrap-light on the terminator + soft warm rim
   mat.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <output_fragment>',`
     { vec3 V=normalize(vViewPosition); float nv=clamp(dot(normal,V),0.0,1.0);
       float rim=pow(1.0-nv,2.5);
-      outgoingLight+= diffuseColor.rgb*vec3(1.0,0.40,0.24)*(0.12*rim+0.045);
+      outgoingLight+= diffuseColor.rgb*vec3(1.0,0.40,0.24)*(0.12*rim+0.045) - reflectedLight.directSpecular*0.45;   // tame balloon-like specular
+      outgoingLight+= vec3(1.0,0.86,0.80)*0.035*pow(1.0-nv,4.0);                                               // soft skin fresnel sheen
     }
     #include <output_fragment>`);};
   mat.needsUpdate=true;
