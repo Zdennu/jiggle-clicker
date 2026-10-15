@@ -1,0 +1,5 @@
+# Android wrapper (minimal WebView, no Gradle)
+- `./build.sh [out.apk]`: builds a debug-signed APK from `../dist-single` (needs JDK 17+, Android SDK build-tools 34 and platform 34 under `$ANDROID_SDK`, default `/opt/android-sdk`). Run `npm run build` first.
+- The app runs fullscreen in portrait and works offline from the bundled `assets/www/index.html`. `navigator.vibrate` goes to native haptics through `window.AndroidHaptics`.
+- **Updates without reinstalling:** set `UPDATE_BASE_URL` in `MainActivity.java` (the "UPDATE CONFIG" block) to an HTTPS folder. To publish an update, bump `public/version.json`, run `npm run build`, then `./make-update.sh`, and upload `update-out/version.json` and `update-out/bundle-N.zip` to that folder. On launch the app checks for a newer version, downloads it, checks its sha256, unpacks it, and uses it from the next launch. If anything fails, it keeps the current bundle or the bundled copy. Saves (localStorage) are kept.
+- Any static host works. It needs plain HTTPS GET with no auth, and the host's terms must allow adult content.

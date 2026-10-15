@@ -3,3 +3,6 @@ dist
 dist-single
 android/app/build
 android/.gradle
+android/build
+android/update-out
+android/debug.keystore

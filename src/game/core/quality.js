@@ -1,3 +1,5 @@
+// Android wrapper: route navigator.vibrate to native haptics (WebView has no Vibration API)
+if(window.AndroidHaptics){navigator.vibrate=p=>{try{AndroidHaptics.vibrate(JSON.stringify(p));}catch(e){}return true;};}
 // ================= QUALITY PRESETS =================
 // low / med / high: body mesh density, shadow map, texture size, pixel-ratio cap. 'auto' picks by device.
 const QUALITY_PRESETS={
