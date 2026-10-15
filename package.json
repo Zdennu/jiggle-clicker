@@ -1,0 +1,22 @@
+{
+  "name": "jiggle-clicker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vite build --mode single",
+    "build:web": "vite build",
+    "build:single": "vite build --mode single",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.128.0",
+    "@fontsource/pacifico": "^5.0.0",
+    "@fontsource/quicksand": "^5.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vite-plugin-singlefile": "^2.0.0"
+  }
+}
