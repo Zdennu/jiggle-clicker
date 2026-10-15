@@ -1,12 +1,14 @@
 // ================= SAVE (versioned schema, key kept for compatibility) =================
 // Storage key stays 'clicker3d_save_v1' so existing players keep progress; the schema version lives in state.v.
-const SAVE_KEY='clicker3d_save_v1', SAVE_VERSION=2;
+const SAVE_KEY='clicker3d_save_v1', SAVE_VERSION=3;
 const SAVE_MIGRATIONS={
   // v1 (no 'v' field): single garment slot -> per-category slots {bra, panty}
   1:s=>{const e=s.equipped;if(!e||typeof e!=='object'){s.equipped={bra:null,panty:null};if(typeof e==='string')s.equipped[e==='panty'?'panty':'bra']=e;}return s;},
+  // v2 -> v3: default crop tank is free for everyone; scene choice added
+  2:s=>{s.wardrobe=Object.assign({},s.wardrobe,{croptank:1});return s;},
 };
 function migrateSave(s){let v=s.v||1;while(v<SAVE_VERSION){s=(SAVE_MIGRATIONS[v]||(x=>x))(s);v++;}s.v=SAVE_VERSION;return s;}
-function fresh(){return{v:SAVE_VERSION,level:0,points:0,total:0,clicks:0,owned:{},ach:{},wardrobe:{},equipped:null,colors:{}};}
+function fresh(){return{v:SAVE_VERSION,level:0,points:0,total:0,clicks:0,owned:{},ach:{},wardrobe:{croptank:1,panty:1},equipped:{top:'croptank',bra:null,panty:'panty'},colors:{},scene:'studio'};}
 let state=fresh();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)state=Object.assign(fresh(),migrateSave(s));}catch(e){}
 const own=id=>state.owned[id]||0;

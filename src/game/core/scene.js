@@ -32,7 +32,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio,QUALITY.pr));
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(2, 3, 2);
 scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040, 1.5));
+const amb=new THREE.AmbientLight(0x404040, 1.5);scene.add(amb);
 
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xd4a574, roughness:0.55, metalness:0.05 });
 renderer.outputEncoding = THREE.sRGBEncoding;
@@ -40,5 +40,5 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure
 light.intensity = 1.35; light.color.set(0xffe0c2); light.position.set(1.8,2.6,2.6);
 const fill = new THREE.DirectionalLight(0xffe6d0, 0.45); fill.position.set(-3, 1.2, 2.5); scene.add(fill);
 const rim = new THREE.DirectionalLight(0xffd0e4, 0.85); rim.position.set(-1.5, 2.5, -3); scene.add(rim);
-scene.add(new THREE.HemisphereLight(0xfff0f5, 0xb07a86, 0.85));
+const hemi=new THREE.HemisphereLight(0xfff0f5, 0xb07a86, 0.85);scene.add(hemi);
 

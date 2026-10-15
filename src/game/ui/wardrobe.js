@@ -1,10 +1,15 @@
 // ---- categories: one data array per category (name, price, colours). Add items here; BUILD[id] makes the mesh. ----
-const CATS=[{key:'bra',label:'Bras',icon:'🎀',items:GARMENTS},{key:'panty',label:'Panties',icon:'👙',items:PANTIES}];
+const CATS=[{key:'top',label:'Tops',icon:'👚',items:TOPS},{key:'bra',label:'Bras',icon:'🎀',items:GARMENTS},{key:'panty',label:'Panties',icon:'👙',items:PANTIES}];
 const allItems=()=>CATS.flatMap(c=>c.items);
 // save migration: old saves had equipped = 'id' | null (single slot)
 (function migrateEquip(){const e=state.equipped;if(!e||typeof e!=='object'){const o={};CATS.forEach(c=>o[c.key]=null);
   if(typeof e==='string'){const c=CATS.find(c=>c.items.some(g=>g.id===e));if(c)o[c.key]=e;}state.equipped=o;}
-  CATS.forEach(c=>{if(!(c.key in state.equipped))state.equipped[c.key]=null;});})();
+  CATS.forEach(c=>{if(!(c.key in state.equipped))state.equipped[c.key]=null;});
+  TOPS.forEach(t=>{if(t.free)state.wardrobe[t.id]=1;});
+  enforceCover();})();
+// nudity gate: below TOPLESS_UNLOCK_LEVEL at least a top or a bra stays on
+function toplessOk(){return (state.level||0)>=TOPLESS_UNLOCK_LEVEL;}
+function enforceCover(){if(!toplessOk()&&!state.equipped.top&&!state.equipped.bra){state.equipped.top='croptank';state.wardrobe.croptank=1;}}
 function buildGarment(id){
   const g=allItems().find(x=>x.id===id);
   const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(g.colors[state.colors[id]||0]).convertSRGBToLinear(),roughness:id==='bikini'?0.5:0.85,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
@@ -21,13 +26,13 @@ function buildGarment(id){
 function applyGarment(){
   if(!state.equipped||typeof state.equipped!=='object')state.equipped={bra:null,panty:null};
   clearGarment();
-  const bra=state.equipped.bra&&GARMENTS.find(x=>x.id===state.equipped.bra);
+  const bra=(state.equipped.bra&&GARMENTS.find(x=>x.id===state.equipped.bra))||(state.equipped.top&&TOPS.find(x=>x.id===state.equipped.top));
   leftNipple.visible=rightNipple.visible=!bra;
   if(paintBody.last!==!bra){paintBody(!bra);paintBody.last=!bra;}
   CATS.forEach(c=>{const id=state.equipped[c.key];if(id&&c.items.some(g=>g.id===id))buildGarment(id);});
   deformDirty=true;
 }
-let wardTab='bra';
+let wardTab='top';
 function renderWardrobe(){
   const L=document.getElementById('wardList');L.innerHTML='';
   const tabs=document.createElement('div');tabs.className='wtabs';
@@ -41,6 +46,9 @@ function renderWardrobe(){
     const b=d.querySelector('button');
     if(!owned){b.textContent=fmt(g.price);b.disabled=state.points<g.price;
       b.onclick=()=>{if(state.points>=g.price){state.points-=g.price;state.wardrobe[g.id]=1;state.equipped[cat.key]=g.id;applyGarment();save();refresh();renderWardrobe();}};}
+    else if(eq&&(cat.key==='top'||cat.key==='bra')&&!toplessOk()&&!state.equipped[cat.key==='top'?'bra':'top']){
+      b.textContent='🔒 Lv '+TOPLESS_UNLOCK_LEVEL;b.disabled=true;b.title='Topless unlocks at Lv '+TOPLESS_UNLOCK_LEVEL;
+      d.insertAdjacentHTML('beforeend',`<div class="lockhint">🔒 Going topless unlocks at Lv ${TOPLESS_UNLOCK_LEVEL} — wear a bra to swap the top off</div>`);}
     else{b.textContent=eq?'Unequip':'Equip';b.onclick=()=>{state.equipped[cat.key]=eq?null:g.id;applyGarment();save();renderWardrobe();};}
     g.colors.forEach((c,i)=>{const sw=document.createElement('span');sw.className='sw'+((state.colors[g.id]||0)===i?' sel':'');
       sw.style.background=hexStr(c);if(g.colorNames)sw.title=g.colorNames[i];sw.onclick=()=>{state.colors[g.id]=i;if(eq)applyGarment();save();renderWardrobe();};

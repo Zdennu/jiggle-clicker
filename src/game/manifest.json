@@ -22,11 +22,13 @@
  "garments/items/tank.js",
  "garments/items/tee.js",
  "garments/items/hoodie.js",
+ "garments/items/croptank.js",
  "ui/wardrobe.js",
  "ui/admin.js",
  "physics/springs.js",
  "physics/levels.js",
  "physics/input.js",
  "ui/settings.js",
+ "core/scenes.js",
  "main/loop.js"
 ]
