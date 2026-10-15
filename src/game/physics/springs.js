@@ -5,7 +5,7 @@
 const springs=new Map();
 [leftBreast,rightBreast].forEach(o=>springs.set(o,{p:[0,0,0],v:[0,0,0],lag:0}));
 const SL=springs.get(leftBreast), SR=springs.get(rightBreast);
-function jiggle(obj){thighKick(0.35);const s=springs.get(obj),sx=obj.sx,L=lvF||0,m=1+0.05*L;
+function jiggle(obj){thighKick(0.35);headReact();const s=springs.get(obj),sx=obj.sx,L=lvF||0,m=1+0.05*L;
   s.v[0]+=-sx*0.75*m; s.v[1]+=-0.6*m; s.v[2]+=-0.35; // tap pushes inward, down and back
   const o=obj===leftBreast?SR:SL; o.v[1]+=-0.3; o.v[0]+=sx*0.15*m; }
 let lastSq={};

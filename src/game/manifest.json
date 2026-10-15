@@ -6,6 +6,7 @@
  "textures/skin.js",
  "body/mesh.js",
  "body/thighs.js",
+ "body/head.js",
  "economy/achievements.js",
  "save/state.js",
  "ui/shop.js",

@@ -90,3 +90,5 @@ button:disabled{opacity:1;filter:grayscale(.5) brightness(1.05);background:linea
 #sceneBtn{position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:6;border:0;border-radius:999px;padding:9px 14px;font:700 13px Quicksand,sans-serif;color:#8a2a52;background:rgba(255,240,246,.82);backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(200,90,130,.25);transition:transform .15s}
 #sceneBtn:active{transform:scale(.94)}
 .lockhint{margin-top:6px;font-size:12px;font-weight:600;color:#a0466e;background:rgba(255,220,235,.7);border-radius:999px;padding:5px 10px}
+
+#appVer{margin-top:10px;text-align:center;font-size:11px;opacity:.6;color:#8a2a52}

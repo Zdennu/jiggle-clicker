@@ -55,7 +55,7 @@ function S(t,yo,mode,out){
     dz+=dk*0.016*ex((y-yc)/0.028)*ss(0.05,0.12,ax)*(1-ss(0.34,0.46,ax))*f;
     dz-=dk*0.022*ex(x/0.06)*ex((y-2.035)/0.05);
     dz+=0.012*ex((y-0.55)/0.18)*ex(x/0.3);          // lower belly
-    dz-=dk*0.010*ex(x/0.022)*ex((y-0.86)/0.022);       // navel
+    dz-=dk*0.010*ex(x/0.022)*ex((y-0.72)/0.022);       // navel (≈ iliac-crest level, 2/5 up from crotch)
     dz-=dk*0.005*ex(x/0.028)*ss(0.75,1.0,y)*(1-ss(1.25,1.4,y)); // abdominal midline
     for(const sx of [-1,1]){
       const nx=sx*(0.035+(y-2.05)*0.42); dz+=dk*0.0045*ex((x-nx)/0.026)*ss(2.06,2.14,y)*(1-ss(2.36,2.44,y)); // neck tendons (SCM)
@@ -116,6 +116,10 @@ function S(t,yo,mode,out){
         const wall=[x0,y,z0];
         P=[0,1,2].map(k=>ring[k]+(wall[k]-ring[k])*sm);
         P[2]+=0.08*Rr*Math.sin(Math.PI*s1)*(1-s1);}                  // soft fillet bulge in the crease
+      {const ly=(P[1]-C[1])/Rr, lo=Math.max(0,-ly), lx=(P[0]-C[0])*sx/Rr, fr=Math.max(0,(P[2]-C[2])/Rr);
+       P[1]-=0.07*Rr*lo*lo*fr; P[2]+=0.03*Rr*lo*(1-lo)*fr;            // gravity: fuller, rounder lower pole
+       P[1]+=0.035*Rr*Math.max(0,ly)*fr; P[2]-=0.04*Rr*Math.max(0,ly)*Math.max(0,ly)*fr;   // upper pole slopes flatter
+       P[0]+=sx*0.025*Rr*Math.max(0,lx)*lo;}                          // slight outer-lower fullness
       {const k=0.02, v=sx*P[0], pen=Math.max(0,0.03-v);                     // squish: inner side flattens on the midline,
        P[0]=sx*k*Math.log1p(Math.exp(v/k));                                     // displaced volume bulges up and forward
        P[1]+=0.45*pen*ss(-0.6,0.4,uy); P[2]+=0.35*pen;}   // soft press at the midline (smooth, never crosses)

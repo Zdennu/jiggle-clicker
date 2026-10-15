@@ -24,8 +24,11 @@ function gameModules() {
   };
 }
 
+const APP_VERSION = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'public/version.json'), 'utf8')).version;
+
 export default defineConfig(({ mode }) => ({
   base: './',
+  define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
   plugins: [gameModules(), ...(mode === 'single' ? [viteSingleFile()] : [])],
   build: {
     outDir: mode === 'single' ? 'dist-single' : 'dist',

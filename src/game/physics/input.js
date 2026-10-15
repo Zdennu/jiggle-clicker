@@ -36,8 +36,8 @@ function fitCamera(){
   // frame neck -> upper thighs (just below the crotch line), chest kept in the upper-middle as the focus
   const tanV=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   // collarbones -> upper thighs; top ~14% of the screen is UI, so aim slightly high
-  const d=Math.max(halfW/tanH+0.15+BR.h, 1.3/tanV+0.3);   // collarbones -> upper thighs fill the screen
-  const ty=1.28;
+  const d=Math.max(halfW/tanH+0.15+BR.h, 1.34/tanV+0.3);   // collarbones -> upper thighs fill the screen
+  const ty=1.78;   // head top -> hips; chest in the middle
   camera.position.set(0,ty+0.08,d);camera.lookAt(0,ty,0);
 }
 fitCamera();
